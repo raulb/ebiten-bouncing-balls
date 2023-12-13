@@ -24,21 +24,23 @@ import (
 )
 
 const (
-	//screenWidth  = 640
-	//screenHeight = 480
 	screenWidth  = 1792
 	screenHeight = 1120
 	doorWidth    = 10
-	doorHeight   = 50
+	doorHeight   = 120
 )
 
 var door = ebiten.NewImage(doorWidth, doorHeight)
 var wall = ebiten.NewImage(doorWidth, screenHeight)
 
+var blackColor = color.RGBA{0, 0, 0, 0xff}
+var redColor = color.RGBA{0xff, 0, 0, 0xff}
+var blueColor = color.RGBA{0, 0, 0xff, 0xff}
+
 func init() {
 	// draw a bar in red, the one that's moving is in black which should be the same background color
-	door.Fill(color.RGBA{0, 0, 0, 0xff})
-	wall.Fill(color.RGBA{0xff, 0, 0, 0xff})
+	door.Fill(blueColor)
+	wall.Fill(redColor)
 }
 
 type Game struct {
@@ -47,23 +49,24 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	dx, dy := ebiten.Wheel()
-	g.x += dx
+	_, dy := ebiten.Wheel()
+	//g.x += dx
 	g.y += dy
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(g.x, g.y)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
-	screen.DrawImage(door, op)
 
 	wallOps := &ebiten.DrawImageOptions{}
 	wallOps.GeoM.Translate(0, 0)
 	wallOps.GeoM.Translate(screenWidth/2, 0)
 
 	screen.DrawImage(wall, wallOps)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(g.x, g.y)
+	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	screen.DrawImage(door, op)
 
 	ebitenutil.DebugPrint(screen,
 		fmt.Sprintf("Move the red point by mouse wheel\n(%0.2f, %0.2f)", g.x, g.y))
